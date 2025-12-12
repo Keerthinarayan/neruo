@@ -1,0 +1,5 @@
+{
+  "name": "NeuroGraph BioAI",
+  "description": "A neurosymbolic drug repurposing platform combining Graph Neural Networks and symbolic reasoning to discover and explain novel therapeutic indications.",
+  "requestFramePermissions": []
+}
