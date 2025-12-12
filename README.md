@@ -18,7 +18,7 @@
 
 ---
 
-## 📸 Screenshots
+## 📸 Model graphs
 
 <div align="center">
 <table>
