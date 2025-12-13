@@ -119,8 +119,8 @@ const ExampleCard: React.FC<{
   <button
     onClick={onClick}
     className={`w-full text-left p-3 rounded-xl border transition-all ${isSelected
-      ? 'bg-gradient-to-r from-cyan-500/10 to-violet-500/10 border-cyan-500/30'
-      : 'bg-white/[0.03] border-white/[0.08] hover:border-white/20 hover:bg-white/[0.05]'
+        ? 'bg-gradient-to-r from-cyan-500/10 to-violet-500/10 border-cyan-500/30'
+        : 'bg-white/[0.03] border-white/[0.08] hover:border-white/20 hover:bg-white/[0.05]'
       }`}
   >
     <div className="flex items-center gap-3">
@@ -218,6 +218,10 @@ const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({ diseases = [], st
       setPathError('Please select both a drug and a disease');
       return;
     }
+
+    setPathLoading(true);
+    setPathError(null);
+    setPathResult(null);
 
     try {
       const result = await api.getDrugDiseasePath(selectedDrugId, selectedDiseaseId);
@@ -321,22 +325,22 @@ const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({ diseases = [], st
           <button
             onClick={() => setActiveMainTab('pathfinder')}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${activeMainTab === 'pathfinder'
-              ? 'bg-white/10 text-white border border-white/20'
-              : 'text-gray-400 hover:text-white hover:bg-white/5'
+                ? 'bg-white/10 text-white border border-white/20'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
           >
             <GitBranch className="w-4 h-4" />
-            Path Finder (Real Data)
+            Path Finder
           </button>
           <button
             onClick={() => setActiveMainTab('explore')}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${activeMainTab === 'explore'
-              ? 'bg-white/10 text-white border border-white/20'
-              : 'text-gray-400 hover:text-white hover:bg-white/5'
+                ? 'bg-white/10 text-white border border-white/20'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
           >
             <Zap className="w-4 h-4" />
-            AI Graph Generator
+            Graph Generator
           </button>
         </div>
       </div>
@@ -621,527 +625,206 @@ const KnowledgeExplorer: React.FC<KnowledgeExplorerProps> = ({ diseases = [], st
               <div className="flex items-center gap-2 mb-3">
                 <BookOpen className="w-4 h-4 text-cyan-400" />
                 <h3 className="text-sm font-medium text-white">Example Cases</h3>
-
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white">Knowledge Graph Explorer</h1>
-                <p className="text-gray-400 text-sm">
-                  Explore {stats?.nodes?.total?.toLocaleString() || '25,000+'} biomedical entities and {stats?.relationships?.toLocaleString() || '76,000+'} relationships
-                </p>
-              </div>
-            </div>
+              <p className="text-xs text-slate-500 mb-3">
+                Pre-loaded drug repurposing case studies.
+              </p>
 
-            {/* Main Tabs */}
-            <div className="flex gap-2">
-              <button
-                onClick={() => setActiveMainTab('pathfinder')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${activeMainTab === 'pathfinder'
-                  ? 'bg-white/10 text-white border border-white/20'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-                  }`}
-              >
-                <GitBranch className="w-4 h-4" />
-                Path Finder
-              </button>
-              <button
-                onClick={() => setActiveMainTab('explore')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${activeMainTab === 'explore'
-                  ? 'bg-white/10 text-white border border-white/20'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-                  }`}
-              >
-                <Zap className="w-4 h-4" />
-                Graph Generator
-              </button>
-            </div>
-          </div>
-<<<<<<< HEAD
-
-  {/* PATH FINDER TAB */ }
-  {
-    activeMainTab === 'pathfinder' && (
-      <div className="bg-gray-900/50 rounded-2xl border border-white/10 p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <GitBranch className="w-5 h-5 text-cyan-400" />
-          <h2 className="text-lg font-semibold text-white">Find Real Biological Connections</h2>
-          <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded-full">Live Neo4j Data</span>
-        </div>
-
-        <p className="text-gray-400 text-sm mb-6">
-          Query our Hetionet knowledge graph to discover how a drug might be connected to a disease through genes, pathways, or similar compounds.
-        </p>
-
-        {/* Selection Row */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] gap-4 items-end mb-6">
-          {/* Drug Selector */}
-          <div className="relative">
-            <label className="block text-sm font-medium text-gray-400 mb-2">Select Drug</label>
-            <div className="relative">
-              <Pill className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cyan-400" />
-              <input
-                type="text"
-                placeholder="Search drugs..."
-                value={drugSearch}
-                onChange={(e) => {
-                  setDrugSearch(e.target.value);
-                  setShowDrugDropdown(true);
-                }}
-                onFocus={() => setShowDrugDropdown(true)}
-                onBlur={() => setTimeout(() => setShowDrugDropdown(false), 200)}
-                className="w-full pl-10 pr-4 py-3 bg-black/30 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50"
-              />
-              {selectedDrugId && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <CheckCircle2 className="w-4 h-4 text-green-400" />
-                </div>
-              )}
-            </div>
-            {showDrugDropdown && (
-              <div className="absolute z-50 w-full mt-1 bg-gray-900 border border-white/10 rounded-xl shadow-xl max-h-60 overflow-auto">
-                {filteredDrugs.length > 0 ? (
-                  filteredDrugs.map(drug => (
-                    <button
-                      key={drug.id}
-                      onMouseDown={() => {
-                        setSelectedDrugId(drug.id);
-                        setDrugSearch(drug.name);
-                        setShowDrugDropdown(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
-                    >
-                      {drug.name}
-                    </button>
-                  ))
-                ) : drugs.length === 0 ? (
-                  <div className="px-4 py-2 text-sm text-gray-500">Loading drugs...</div>
-                ) : (
-                  <div className="px-4 py-2 text-sm text-gray-500">No drugs found</div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Arrow */}
-          <div className="flex items-center justify-center py-3">
-            <div className="p-2 bg-purple-500/20 rounded-full">
-              <ArrowRight className="w-5 h-5 text-purple-400" />
-            </div>
-          </div>
-
-          {/* Disease Selector */}
-          <div className="relative">
-            <label className="block text-sm font-medium text-gray-400 mb-2">Select Disease</label>
-            <div className="relative">
-              <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-red-400" />
-              <input
-                type="text"
-                placeholder="Search diseases..."
-                value={diseaseSearchPF}
-                onChange={(e) => {
-                  setDiseaseSearchPF(e.target.value);
-                  setShowDiseaseDropdownPF(true);
-                }}
-                onFocus={() => setShowDiseaseDropdownPF(true)}
-                onBlur={() => setTimeout(() => setShowDiseaseDropdownPF(false), 200)}
-                className="w-full pl-10 pr-4 py-3 bg-black/30 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-red-500/50"
-              />
-              {selectedDiseaseId && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <CheckCircle2 className="w-4 h-4 text-green-400" />
-                </div>
-              )}
-            </div>
-            {showDiseaseDropdownPF && (
-              <div className="absolute z-50 w-full mt-1 bg-gray-900 border border-white/10 rounded-xl shadow-xl max-h-60 overflow-auto">
-                {filteredDiseasesPF.length > 0 ? (
-                  filteredDiseasesPF.map(disease => (
-                    <button
-                      key={disease.id}
-                      onMouseDown={() => {
-                        setSelectedDiseaseId(disease.id);
-                        setDiseaseSearchPF(disease.name);
-                        setShowDiseaseDropdownPF(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
-                    >
-                      {disease.name}
-                    </button>
-                  ))
-                ) : availableDiseases.length === 0 ? (
-                  <div className="px-4 py-2 text-sm text-gray-500">Loading diseases...</div>
-                ) : (
-                  <div className="px-4 py-2 text-sm text-gray-500">No diseases found</div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Find Path Button */}
-        <button
-          onClick={findPath}
-          disabled={pathLoading || !selectedDrugId || !selectedDiseaseId}
-          className="w-full py-3 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:cursor-not-allowed"
-        >
-          {pathLoading ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              Searching paths in Neo4j...
-            </>
-          ) : (
-            <>
-              <Search className="w-5 h-5" />
-              Find Biological Connections
-            </>
-          )}
-        </button>
-
-        {/* Error */}
-        {pathError && (
-          <div className="mt-4 p-4 bg-red-900/20 border border-red-500/20 rounded-xl flex items-center gap-3">
-            <XCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
-            <p className="text-red-400 text-sm">{pathError}</p>
-          </div>
-        )}
-
-        {/* Results */}
-        {pathResult && (
-          <div className="mt-6 space-y-4">
-            <div className="flex items-center gap-2 text-white">
-              <Zap className="w-5 h-5 text-yellow-400" />
-              <span className="font-medium">Connection Paths Found</span>
-            </div>
-
-            {/* Direct Connection */}
-            {pathResult.paths.direct && pathResult.paths.direct.relationship && (
-              <div className="p-4 bg-green-900/20 border border-green-500/20 rounded-xl">
-                <div className="flex items-center gap-2 mb-2">
-                  <CheckCircle2 className="w-5 h-5 text-green-400" />
-                  <span className="text-green-400 font-medium">Direct Connection!</span>
-                </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="px-2 py-1 bg-cyan-500/20 text-cyan-400 rounded text-sm">{pathResult.drug.name}</span>
-                  <ArrowRight className="w-4 h-4 text-gray-500" />
-                  <span className={`px-2 py-1 rounded text-sm font-mono ${getRelationshipColor(pathResult.paths.direct.relationship)}`}>
-                    {pathResult.paths.direct.relationship}
-                  </span>
-                  <ArrowRight className="w-4 h-4 text-gray-500" />
-                  <span className="px-2 py-1 bg-red-500/20 text-red-400 rounded text-sm">{pathResult.disease.name}</span>
-                </div>
-              </div>
-            )}
-
-            {/* Gene-Mediated Paths */}
-            {pathResult.paths.gene_mediated && pathResult.paths.gene_mediated.length > 0 && (
-              <div className="p-4 bg-purple-900/20 border border-purple-500/20 rounded-xl">
-                <div className="flex items-center gap-2 mb-3">
-                  <Dna className="w-5 h-5 text-purple-400" />
-                  <span className="text-purple-400 font-medium">Gene-Mediated Connections ({pathResult.paths.gene_mediated.length})</span>
-                </div>
-                <div className="space-y-2">
-                  {pathResult.paths.gene_mediated.slice(0, 5).map((path, idx) => (
-                    <div key={idx} className="flex items-center gap-2 flex-wrap text-sm">
-                      <span className="px-2 py-1 bg-cyan-500/20 text-cyan-400 rounded">{pathResult.drug.name}</span>
-                      <ArrowRight className="w-3 h-3 text-gray-500" />
-                      <span className={`px-2 py-0.5 rounded font-mono text-xs ${getRelationshipColor(path.drug_gene_rel)}`}>
-                        {path.drug_gene_rel}
-                      </span>
-                      <ArrowRight className="w-3 h-3 text-gray-500" />
-                      <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded">{path.gene}</span>
-                      <ArrowRight className="w-3 h-3 text-gray-500" />
-                      <span className={`px-2 py-0.5 rounded font-mono text-xs ${getRelationshipColor(path.gene_disease_rel)}`}>
-                        {path.gene_disease_rel}
-                      </span>
-                      <ArrowRight className="w-3 h-3 text-gray-500" />
-                      <span className="px-2 py-1 bg-red-500/20 text-red-400 rounded">{pathResult.disease.name}</span>
-                    </div>
-                  ))}
-                  {pathResult.paths.gene_mediated.length > 5 && (
-                    <p className="text-gray-500 text-xs">+ {pathResult.paths.gene_mediated.length - 5} more gene pathways</p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Similar Drugs Path */}
-            {pathResult.paths.via_similar_drugs && pathResult.paths.via_similar_drugs.length > 0 && (
-              <div className="p-4 bg-yellow-900/20 border border-yellow-500/20 rounded-xl">
-                <div className="flex items-center gap-2 mb-3">
-                  <Pill className="w-5 h-5 text-yellow-400" />
-                  <span className="text-yellow-400 font-medium">Similar Drug Connections ({pathResult.paths.via_similar_drugs.length})</span>
-                </div>
-                <div className="space-y-2">
-                  {pathResult.paths.via_similar_drugs.slice(0, 3).map((path, idx) => (
-                    <div key={idx} className="flex items-center gap-2 flex-wrap text-sm">
-                      <span className="px-2 py-1 bg-cyan-500/20 text-cyan-400 rounded">{pathResult.drug.name}</span>
-                      <ArrowRight className="w-3 h-3 text-gray-500" />
-                      <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 rounded font-mono text-xs">RESEMBLES</span>
-                      <ArrowRight className="w-3 h-3 text-gray-500" />
-                      <span className="px-2 py-1 bg-cyan-500/20 text-cyan-300 rounded">{path.similar_drug}</span>
-                      <ArrowRight className="w-3 h-3 text-gray-500" />
-                      <span className="px-2 py-0.5 bg-green-500/20 text-green-400 rounded font-mono text-xs">TREATS</span>
-                      <ArrowRight className="w-3 h-3 text-gray-500" />
-                      <span className="px-2 py-1 bg-red-500/20 text-red-400 rounded">{pathResult.disease.name}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* No Paths Found */}
-            {(!pathResult.paths.direct || !pathResult.paths.direct.relationship) &&
-              (!pathResult.paths.gene_mediated || pathResult.paths.gene_mediated.length === 0) &&
-              (!pathResult.paths.via_similar_drugs || pathResult.paths.via_similar_drugs.length === 0) &&
-              (!pathResult.paths.via_similar_diseases || pathResult.paths.via_similar_diseases.length === 0) && (
-                <div className="p-4 bg-gray-800/50 border border-white/10 rounded-xl">
-                  <div className="flex items-center gap-2">
-                    <XCircle className="w-5 h-5 text-gray-400" />
-                    <span className="text-gray-400">No direct biological connections found in the knowledge graph.</span>
-                  </div>
-                  <p className="text-gray-500 text-sm mt-2">
-                    This could indicate a potential novel repurposing opportunity worth investigating!
-                  </p>
-                </div>
-              )}
-          </div>
-        )}
-
-        {/* Schema Info */}
-        <div className="mt-8 p-4 bg-blue-900/20 border border-blue-500/20 rounded-xl">
-          <div className="flex items-center gap-2 mb-3">
-            <Database className="w-4 h-4 text-blue-400" />
-            <span className="text-blue-400 font-medium text-sm">Graph Schema</span>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-            {[
-              { rel: 'TREATS', color: 'green' },
-              { rel: 'BINDS', color: 'blue' },
-              { rel: 'ASSOCIATES', color: 'purple' },
-              { rel: 'RESEMBLES', color: 'yellow' },
-              { rel: 'UPREGULATES', color: 'orange' },
-            ].map(item => (
-              <span key={item.rel} className={`px-2 py-1 ${getRelationshipColor(item.rel)} rounded text-xs font-mono text-center`}>
-                {item.rel}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  {/* AI GRAPH GENERATOR TAB (Existing Functionality) */ }
-  {
-    activeMainTab === 'explore' && (
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        {/* Sidebar */}
-        <div className="lg:col-span-1 space-y-4">
-          <div className="card rounded-2xl p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <BookOpen className="w-4 h-4 text-cyan-400" />
-              <h3 className="text-sm font-medium text-white">Example Cases</h3>
-            </div>
-            <p className="text-xs text-slate-500 mb-3">
-              Pre-loaded drug repurposing case studies.
-            </p>
-
-            <div className="space-y-2">
-              {Object.entries(EXAMPLE_GRAPHS).map(([id, example]) => (
-                <ExampleCard
-                  key={id}
-                  id={id}
-                  title={example.title}
-                  description={example.description}
-                  icon={iconMap[id] || Zap}
-                  isSelected={selectedExample === id}
-                  onClick={() => handleExampleSelect(id)}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Info Panel */}
-          <div className="card rounded-2xl p-4">
-            <Zap className="w-4 h-4 text-cyan-400 mb-2" />
-            <h4 className="text-sm font-medium text-white mb-1">Neurosymbolic Method</h4>
-            <p className="text-xs text-slate-500">
-              GNN embeddings + symbolic logic for discovering drug-disease relationships.
-            </p>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="lg:col-span-3 space-y-4">
-          {/* Custom Search */}
-          <div className="card rounded-2xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex-1 relative">
-                <input
-                  type="text"
-                  value={customSearch}
-                  onChange={(e) => setCustomSearch(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleCustomSearch()}
-                  placeholder="Enter any drug, disease, or gene to explore..."
-                  className="w-full glass-input rounded-xl py-2.5 pl-4 pr-10 text-sm text-white placeholder-slate-500 focus:outline-none"
-                />
-                <Search className="absolute right-3 top-2.5 w-4 h-4 text-slate-500" />
-              </div>
-              <button
-                onClick={handleCustomSearch}
-                disabled={isLoading || !customSearch.trim()}
-                className="glass-btn glass-btn-primary px-5 py-2.5 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                <Zap className="w-4 h-4" />
-                Generate
-              </button>
-            </div>
-            {searchError && (
-              <p className="text-red-400 text-xs mt-2">{searchError}</p>
-            )}
-          </div>
-
-          {/* Current Example Header */}
-          <div className="card rounded-2xl p-4 flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-medium text-white">{currentTitle}</h2>
-              <p className="text-xs text-slate-500 mt-0.5">{currentDescription}</p>
-            </div>
-            {isCustomMode && (
-              <span className="text-[10px] px-2 py-1 bg-purple-500/10 text-purple-400 rounded">
-                Simulated
-              </span>
-            )}
-          </div>
-
-          {/* Graph Visualization */}
-          <div className="h-[450px] relative">
-            {isLoading ? (
-              <div className="h-full w-full card rounded-2xl flex flex-col items-center justify-center">
-                <Loader2 className="w-8 h-8 text-cyan-500 animate-spin mb-3" />
-                <p className="text-slate-400 text-sm">{isCustomMode ? 'Generating...' : 'Loading...'}</p>
-              </div>
-            ) : currentGraph ? (
-              <NetworkGraph data={currentGraph} />
-            ) : (
-              <div className="h-full w-full card rounded-2xl flex flex-col items-center justify-center">
-                <p className="text-slate-500 text-sm">Enter a search term to generate a graph</p>
-              </div>
-            )}
-          </div>
-
-          {/* Stats Row */}
-          {currentGraph && (
-            <div className="grid grid-cols-4 gap-3">
-              <div className="card rounded-2xl p-3 text-center">
-                <div className="text-xl font-semibold text-white">{currentGraph.nodes.length}</div>
-                <div className="text-[10px] text-slate-500 mt-0.5">Nodes</div>
-              </div>
-              <div className="card rounded-2xl p-3 text-center">
-                <div className="text-xl font-semibold text-white">{currentGraph.links.length}</div>
-                <div className="text-[10px] text-slate-500 mt-0.5">Edges</div>
-              </div>
-              <div className="card rounded-2xl p-3 text-center">
-                <div className="text-xl font-semibold text-cyan-400">
-                  {currentGraph.nodes.filter(n => n.type === NodeType.DRUG || n.type === 'DRUG').length}
-                </div>
-                <div className="text-[10px] text-slate-500 mt-0.5">Drugs</div>
-              </div>
-              <div className="card rounded-2xl p-3 text-center">
-                <div className="text-xl font-semibold text-violet-400">
-                  {currentGraph.nodes.filter(n => n.type === NodeType.DISEASE || n.type === 'DISEASE').length}
-                </div>
-                <div className="text-[10px] text-slate-500 mt-0.5">Diseases</div>
+              <div className="space-y-2">
+                {Object.entries(EXAMPLE_GRAPHS).map(([id, example]) => (
+                  <ExampleCard
+                    key={id}
+                    id={id}
+                    title={example.title}
+                    description={example.description}
+                    icon={iconMap[id] || Zap}
+                    isSelected={selectedExample === id}
+                    onClick={() => handleExampleSelect(id)}
+                  />
+                ))}
               </div>
             </div>
-          )}
 
-          {/* Prediction Result */}
-          {isCustomMode && customPrediction && (
+            {/* Info Panel */}
             <div className="card rounded-2xl p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Zap className="w-4 h-4 text-violet-400" />
-                <h3 className="text-sm font-medium text-white">Prediction Result</h3>
-              </div>
-              <div className="flex items-center gap-3 mb-3">
-                <span className="px-2 py-1 bg-cyan-600 text-white text-sm rounded-lg font-medium">{customPrediction.source}</span>
-                <ArrowRight className="w-4 h-4 text-slate-500" />
-                <span className="px-2 py-1 bg-emerald-600 text-white text-sm rounded font-medium">{customPrediction.target}</span>
-                <span className="ml-auto text-emerald-400 font-mono text-xs">
-                  {((customPrediction.neuralScore + customPrediction.symbolicConfidence) / 2 * 100).toFixed(0)}% confidence
-                </span>
-              </div>
-              <p className="text-slate-300 text-sm">{customPrediction.explanation}</p>
-
-              {/* Reasoning Chain */}
-              <div className="mt-4 pt-4 border-t border-slate-700">
-                <p className="text-xs text-slate-500 mb-2">Reasoning Path:</p>
-                <div className="flex flex-wrap items-center gap-2 text-sm">
-                  <span className="px-2 py-1 bg-blue-600/50 text-blue-200 rounded">{customPrediction.source}</span>
-                  {customPrediction.reasoningChain?.map((hop, idx) => (
-                    <React.Fragment key={idx}>
-                      <span className="text-slate-600 text-xs">→ {hop.logic} →</span>
-                      <span className="px-2 py-1 bg-slate-700 text-slate-300 rounded">{hop.step}</span>
-                    </React.Fragment>
-                  ))}
-                  <span className="text-slate-600 text-xs">→</span>
-                  <span className="px-2 py-1 bg-emerald-600/50 text-emerald-200 rounded">{customPrediction.target}</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Reasoning Explanation for pre-loaded examples */}
-          {!isCustomMode && (
-            <div className="card rounded-2xl p-4">
-              <h3 className="text-sm font-medium text-white mb-3">Reasoning Path</h3>
-              <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                {selectedExample === 'metformin' && (
-                  <>
-                    <span className="px-2 py-1 bg-cyan-600 text-white rounded-lg">Metformin</span>
-                    <span className="text-slate-500">→ activates →</span>
-                    <span className="px-2 py-1 bg-slate-700 text-emerald-400 rounded">AMPK</span>
-                    <span className="text-slate-500">→ inhibits →</span>
-                    <span className="px-2 py-1 bg-slate-700 text-emerald-400 rounded">mTOR</span>
-                    <span className="text-slate-500">→</span>
-                    <span className="px-2 py-1 bg-red-600 text-white rounded">Aging</span>
-                  </>
-                )}
-                {selectedExample === 'sildenafil' && (
-                  <>
-                    <span className="px-2 py-1 bg-blue-600 text-white rounded">Sildenafil</span>
-                    <span className="text-slate-500">→ inhibits →</span>
-                    <span className="px-2 py-1 bg-slate-700 text-emerald-400 rounded">PDE5</span>
-                    <span className="text-slate-500">→</span>
-                    <span className="px-2 py-1 bg-slate-700 text-yellow-400 rounded">cGMP</span>
-                    <span className="text-slate-500">→ reduces →</span>
-                    <span className="px-2 py-1 bg-slate-700 text-emerald-400 rounded">Tau</span>
-                    <span className="text-slate-500">→</span>
-                    <span className="px-2 py-1 bg-red-600 text-white rounded">Alzheimer's</span>
-                  </>
-                )}
-                {selectedExample === 'aspirin' && (
-                  <>
-                    <span className="px-2 py-1 bg-blue-600 text-white rounded">Aspirin</span>
-                    <span className="text-slate-500">→ inhibits →</span>
-                    <span className="px-2 py-1 bg-slate-700 text-emerald-400 rounded">COX-2</span>
-                    <span className="text-slate-500">→</span>
-                    <span className="px-2 py-1 bg-slate-700 text-yellow-400 rounded">Wnt</span>
-                    <span className="text-slate-500">→</span>
-                    <span className="px-2 py-1 bg-red-600 text-white rounded">Colorectal Cancer</span>
-                  </>
-                )}
-              </div>
-              <p className="text-[10px] text-slate-500 mt-3">
-                The symbolic reasoner validates GNN predictions by tracing biological mechanisms.
+              <Zap className="w-4 h-4 text-cyan-400 mb-2" />
+              <h4 className="text-sm font-medium text-white mb-1">Neurosymbolic Method</h4>
+              <p className="text-xs text-slate-500">
+                GNN embeddings + symbolic logic for discovering drug-disease relationships.
               </p>
             </div>
-          )}
-        </div>
+          </div>
 
-      </div>
-    )
-  }
-    </div >
+          {/* Main Content */}
+          <div className="lg:col-span-3 space-y-4">
+            {/* Custom Search */}
+            <div className="card rounded-2xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    value={customSearch}
+                    onChange={(e) => setCustomSearch(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleCustomSearch()}
+                    placeholder="Enter any drug, disease, or gene to explore..."
+                    className="w-full glass-input rounded-xl py-2.5 pl-4 pr-10 text-sm text-white placeholder-slate-500 focus:outline-none"
+                  />
+                  <Search className="absolute right-3 top-2.5 w-4 h-4 text-slate-500" />
+                </div>
+                <button
+                  onClick={handleCustomSearch}
+                  disabled={isLoading || !customSearch.trim()}
+                  className="glass-btn glass-btn-primary px-5 py-2.5 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  <Zap className="w-4 h-4" />
+                  Generate
+                </button>
+              </div>
+              {searchError && (
+                <p className="text-red-400 text-xs mt-2">{searchError}</p>
+              )}
+            </div>
+
+            {/* Current Example Header */}
+            <div className="card rounded-2xl p-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-medium text-white">{currentTitle}</h2>
+                <p className="text-xs text-slate-500 mt-0.5">{currentDescription}</p>
+              </div>
+              {isCustomMode && (
+                <span className="text-[10px] px-2 py-1 bg-purple-500/10 text-purple-400 rounded">
+                  Simulated
+                </span>
+              )}
+            </div>
+
+            {/* Graph Visualization */}
+            <div className="h-[450px] relative">
+              {isLoading ? (
+                <div className="h-full w-full card rounded-2xl flex flex-col items-center justify-center">
+                  <Loader2 className="w-8 h-8 text-cyan-500 animate-spin mb-3" />
+                  <p className="text-slate-400 text-sm">{isCustomMode ? 'Generating...' : 'Loading...'}</p>
+                </div>
+              ) : currentGraph ? (
+                <NetworkGraph data={currentGraph} />
+              ) : (
+                <div className="h-full w-full card rounded-2xl flex flex-col items-center justify-center">
+                  <p className="text-slate-500 text-sm">Enter a search term to generate a graph</p>
+                </div>
+              )}
+            </div>
+
+            {/* Stats Row */}
+            {currentGraph && (
+              <div className="grid grid-cols-4 gap-3">
+                <div className="card rounded-2xl p-3 text-center">
+                  <div className="text-xl font-semibold text-white">{currentGraph.nodes.length}</div>
+                  <div className="text-[10px] text-slate-500 mt-0.5">Nodes</div>
+                </div>
+                <div className="card rounded-2xl p-3 text-center">
+                  <div className="text-xl font-semibold text-white">{currentGraph.links.length}</div>
+                  <div className="text-[10px] text-slate-500 mt-0.5">Edges</div>
+                </div>
+                <div className="card rounded-2xl p-3 text-center">
+                  <div className="text-xl font-semibold text-cyan-400">
+                    {currentGraph.nodes.filter(n => n.type === NodeType.DRUG || n.type === 'DRUG').length}
+                  </div>
+                  <div className="text-[10px] text-slate-500 mt-0.5">Drugs</div>
+                </div>
+                <div className="card rounded-2xl p-3 text-center">
+                  <div className="text-xl font-semibold text-violet-400">
+                    {currentGraph.nodes.filter(n => n.type === NodeType.DISEASE || n.type === 'DISEASE').length}
+                  </div>
+                  <div className="text-[10px] text-slate-500 mt-0.5">Diseases</div>
+                </div>
+              </div>
+            )}
+
+            {/* Prediction Result */}
+            {isCustomMode && customPrediction && (
+              <div className="card rounded-2xl p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Zap className="w-4 h-4 text-violet-400" />
+                  <h3 className="text-sm font-medium text-white">Prediction Result</h3>
+                </div>
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="px-2 py-1 bg-cyan-600 text-white text-sm rounded-lg font-medium">{customPrediction.source}</span>
+                  <ArrowRight className="w-4 h-4 text-slate-500" />
+                  <span className="px-2 py-1 bg-emerald-600 text-white text-sm rounded font-medium">{customPrediction.target}</span>
+                  <span className="ml-auto text-emerald-400 font-mono text-xs">
+                    {((customPrediction.neuralScore + customPrediction.symbolicConfidence) / 2 * 100).toFixed(0)}% confidence
+                  </span>
+                </div>
+                <p className="text-slate-300 text-sm">{customPrediction.explanation}</p>
+
+                {/* Reasoning Chain */}
+                <div className="mt-4 pt-4 border-t border-slate-700">
+                  <p className="text-xs text-slate-500 mb-2">Reasoning Path:</p>
+                  <div className="flex flex-wrap items-center gap-2 text-sm">
+                    <span className="px-2 py-1 bg-blue-600/50 text-blue-200 rounded">{customPrediction.source}</span>
+                    {customPrediction.reasoningChain?.map((hop, idx) => (
+                      <React.Fragment key={idx}>
+                        <span className="text-slate-600 text-xs">→ {hop.logic} →</span>
+                        <span className="px-2 py-1 bg-slate-700 text-slate-300 rounded">{hop.step}</span>
+                      </React.Fragment>
+                    ))}
+                    <span className="text-slate-600 text-xs">→</span>
+                    <span className="px-2 py-1 bg-emerald-600/50 text-emerald-200 rounded">{customPrediction.target}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Reasoning Explanation for pre-loaded examples */}
+            {!isCustomMode && (
+              <div className="card rounded-2xl p-4">
+                <h3 className="text-sm font-medium text-white mb-3">Reasoning Path</h3>
+                <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                  {selectedExample === 'metformin' && (
+                    <>
+                      <span className="px-2 py-1 bg-cyan-600 text-white rounded-lg">Metformin</span>
+                      <span className="text-slate-500">→ activates →</span>
+                      <span className="px-2 py-1 bg-slate-700 text-emerald-400 rounded">AMPK</span>
+                      <span className="text-slate-500">→ inhibits →</span>
+                      <span className="px-2 py-1 bg-slate-700 text-emerald-400 rounded">mTOR</span>
+                      <span className="text-slate-500">→</span>
+                      <span className="px-2 py-1 bg-red-600 text-white rounded">Aging</span>
+                    </>
+                  )}
+                  {selectedExample === 'sildenafil' && (
+                    <>
+                      <span className="px-2 py-1 bg-blue-600 text-white rounded">Sildenafil</span>
+                      <span className="text-slate-500">→ inhibits →</span>
+                      <span className="px-2 py-1 bg-slate-700 text-emerald-400 rounded">PDE5</span>
+                      <span className="text-slate-500">→</span>
+                      <span className="px-2 py-1 bg-slate-700 text-yellow-400 rounded">cGMP</span>
+                      <span className="text-slate-500">→ reduces →</span>
+                      <span className="px-2 py-1 bg-slate-700 text-emerald-400 rounded">Tau</span>
+                      <span className="text-slate-500">→</span>
+                      <span className="px-2 py-1 bg-red-600 text-white rounded">Alzheimer's</span>
+                    </>
+                  )}
+                  {selectedExample === 'aspirin' && (
+                    <>
+                      <span className="px-2 py-1 bg-blue-600 text-white rounded">Aspirin</span>
+                      <span className="text-slate-500">→ inhibits →</span>
+                      <span className="px-2 py-1 bg-slate-700 text-emerald-400 rounded">COX-2</span>
+                      <span className="text-slate-500">→</span>
+                      <span className="px-2 py-1 bg-slate-700 text-yellow-400 rounded">Wnt</span>
+                      <span className="text-slate-500">→</span>
+                      <span className="px-2 py-1 bg-red-600 text-white rounded">Colorectal Cancer</span>
+                    </>
+                  )}
+                </div>
+                <p className="text-[10px] text-slate-500 mt-3">
+                  The symbolic reasoner validates GNN predictions by tracing biological mechanisms.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

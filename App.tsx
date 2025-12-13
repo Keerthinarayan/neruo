@@ -99,11 +99,15 @@ function App() {
             {/* FULL SCREEN Video Background */}
             <div className="fixed top-0 left-0 w-screen h-screen z-0 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-[#050505] z-10 pointer-events-none"></div>
-              <img
-                src="/Recording 2025-12-13 095515.gif"
-                alt="Background"
-                className="w-full h-full object-cover scale-105 pointer-events-none opacity-40 mix-blend-screen"
-              />
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover scale-105 pointer-events-none opacity-80 mix-blend-screen"
+              >
+                <source src="/hero-background.mp4" type="video/mp4" />
+              </video>
             </div>
 
             <div className="max-w-6xl mx-auto animate-fade-in relative z-10">
