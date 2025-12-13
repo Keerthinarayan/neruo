@@ -3,8 +3,11 @@ import { api, Disease, Prediction } from './services/api';
 import { GraphView } from './components/GraphView';
 import { FullNetworkGraph } from './components/FullNetworkGraph';
 import Navbar, { ViewState } from './components/Navbar';
+import GridBackground from './components/GridBackground';
 import Footer from './components/Footer';
-import { Network, Brain, Search, Activity, Database, GitBranch, Zap, ArrowRight, Lightbulb, Clock, Target, CheckCircle2, Beaker, Info, BookOpen, AlertTriangle, Check, X, ArrowUp, Share2, HelpCircle } from 'lucide-react';
+import KnowledgeExplorer from './components/KnowledgeExplorer';
+import AMIEAnalysis from './components/AMIEAnalysis';
+import { Network, Brain, Search, Activity, Database, GitBranch, Zap, ArrowRight, Lightbulb, Clock, Target, CheckCircle2, Beaker, Info, BookOpen, AlertTriangle, Check, X, ArrowUp, Share2, HelpCircle, Scan } from 'lucide-react';
 
 function App() {
   const [currentView, setCurrentView] = useState<ViewState>(ViewState.DASHBOARD);
@@ -79,13 +82,16 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-gray-100 font-sans selection:bg-purple-900/50 pb-24">
+    <div className="min-h-screen flex flex-col bg-[#050505] text-gray-100 font-sans selection:bg-purple-900/50">
 
       {/* Navigation */}
       <Navbar currentView={currentView} setCurrentView={setCurrentView} />
 
+      {/* Grid Background for Non-Dashboard Views */}
+      {currentView !== ViewState.DASHBOARD && <GridBackground />}
+
       {/* Main Content Area */}
-      <div className="pt-28 px-6">
+      <div className="pt-28 px-6 flex-grow">
 
         {/* DASHBOARD VIEW */}
         {currentView === ViewState.DASHBOARD && (
@@ -93,27 +99,25 @@ function App() {
             {/* FULL SCREEN Video Background */}
             <div className="fixed top-0 left-0 w-screen h-screen z-0 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-[#050505] z-10 pointer-events-none"></div>
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover scale-105 pointer-events-none"
-              >
-                <source src="/hero-background.mp4" type="video/mp4" />
-              </video>
+              <img
+                src="/Recording 2025-12-13 095515.gif"
+                alt="Background"
+                className="w-full h-full object-cover scale-105 pointer-events-none opacity-40 mix-blend-screen"
+              />
             </div>
 
             <div className="max-w-6xl mx-auto animate-fade-in relative z-10">
               <div className="text-center py-24 px-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-900/50 border border-purple-500/30 text-purple-200 text-xs font-semibold mb-6 tracking-wide uppercase backdrop-blur-sm shadow-lg">
-                  <Zap className="w-3 h-3 text-yellow-400 fill-current" />
-                  Next-Gen Drug Discovery
-                </div>
-                <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight drop-shadow-2xl">
-                  Explainable AI for <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 drop-shadow-sm">Biomedical Insight</span>
+
+                <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-blue-300 to-purple-300 mb-2 pb-4 tracking-tighter drop-shadow-[0_0_25px_rgba(168,85,247,0.5)]">
+                  Neurosymbolic Graph AI
                 </h1>
+                <div className="text-4xl font-black my-4 tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-blue-300 to-purple-300 drop-shadow-[0_0_25px_rgba(168,85,247,0.5)]">
+                  for
+                </div>
+                <div className="text-4xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300 mb-8 pb-4 drop-shadow-2xl tracking-tight">
+                  Drug Repurposing
+                </div>
                 <p className="text-gray-200 text-lg max-w-2xl mx-auto mb-8 font-medium drop-shadow-md text-shadow">
                   Discover new uses for existing drugs using cutting-edge AI that explains its reasoning in plain language.
                 </p>
@@ -138,7 +142,7 @@ function App() {
               {/* Educational Sections */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16 px-4">
                 {/* How Our AI Works */}
-                <div className="bg-gray-900/40 rounded-3xl border border-white/10 p-8 backdrop-blur-md hover:border-white/20 transition-all">
+                <div className="bg-gray-900/[0.45] hover:bg-gray-900/[0.65] rounded-3xl border border-white/10 p-8 backdrop-blur-md hover:border-white/20 transition-all duration-300">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="p-2 bg-cyan-500/20 rounded-lg">
                       <Brain className="w-6 h-6 text-cyan-400" />
@@ -170,29 +174,50 @@ function App() {
                   </div>
                 </div>
 
-                {/* What is Drug Repurposing */}
-                <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 rounded-3xl border border-purple-500/20 p-8 backdrop-blur-md hover:border-purple-500/40 transition-all">
+                {/* The NeuroGraph Advantage (USP Section) */}
+                <div className="bg-gradient-to-br from-purple-900/[0.25] to-blue-900/[0.25] hover:from-purple-900/[0.45] hover:to-blue-900/[0.45] rounded-3xl border border-purple-500/20 p-8 backdrop-blur-md hover:border-purple-500/40 transition-all duration-300">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="p-2 bg-purple-500/20 rounded-lg">
-                      <Lightbulb className="w-6 h-6 text-purple-400" />
+                      <Zap className="w-6 h-6 text-purple-400" />
                     </div>
-                    <h3 className="text-xl font-bold text-white">Why Repurpose?</h3>
+                    <h3 className="text-xl font-bold text-white">The NeuroGraph Advantage</h3>
                   </div>
-                  <p className="text-gray-300 mb-6 leading-relaxed">
-                    Finding new uses for approved drugs saves <span className="text-purple-400 font-bold">years</span> and <span className="text-purple-400 font-bold">billions</span>.
-                  </p>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-black/20 rounded-xl p-4 border border-white/5">
-                      <div className="flex items-center gap-2 mb-1 text-cyan-400 font-semibold text-sm">
-                        <Clock className="w-4 h-4" /> Faster
+
+                  <div className="space-y-5">
+                    <div className="flex items-start gap-4">
+                      <div className="p-2 bg-black/30 rounded-lg mt-1 border border-white/5">
+                        <Brain className="w-5 h-5 text-pink-400" />
                       </div>
-                      <p className="text-xs text-gray-500">Skip safety trials</p>
+                      <div>
+                        <h4 className="text-white font-bold text-sm mb-1">Hybrid Logic Core</h4>
+                        <p className="text-xs text-gray-400 leading-relaxed">
+                          Combining the predictive power of deep learning with the rigorous validity of symbolic reasoning.
+                        </p>
+                      </div>
                     </div>
-                    <div className="bg-black/20 rounded-xl p-4 border border-white/5">
-                      <div className="flex items-center gap-2 mb-1 text-green-400 font-semibold text-sm">
-                        <Target className="w-4 h-4" /> Cheaper
+
+                    <div className="flex items-start gap-4">
+                      <div className="p-2 bg-black/30 rounded-lg mt-1 border border-white/5">
+                        <Network className="w-5 h-5 text-emerald-400" />
                       </div>
-                      <p className="text-xs text-gray-500">90% cost reduction</p>
+                      <div>
+                        <h4 className="text-white font-bold text-sm mb-1">Custom GNN Model</h4>
+                        <p className="text-xs text-gray-400 leading-relaxed">
+                          A specialized graph neural network architecture engineered to capture complex, multi-hop biological relationships.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-4">
+                      <div className="p-2 bg-black/30 rounded-lg mt-1 border border-white/5">
+                        <Clock className="w-5 h-5 text-blue-400" />
+                      </div>
+                      <div>
+                        <h4 className="text-white font-bold text-sm mb-1">Accelerated Discovery</h4>
+                        <p className="text-xs text-gray-400 leading-relaxed">
+                          Reduce drug discovery timelines from years to months with precise repurposing candidates.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -217,14 +242,14 @@ function App() {
                 {/* Left Sidebar - Configuration */}
                 <div className="lg:col-span-4 space-y-6">
                   {/* Info Banner */}
-                  <div className="p-6 rounded-2xl bg-gradient-to-br from-blue-900/20 to-cyan-900/20 border border-blue-500/20 relative overflow-hidden group">
+                  <div className="p-6 rounded-2xl bg-gradient-to-br from-blue-900/20 to-cyan-900/20 border border-blue-500/20 relative overflow-hidden group mb-6">
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                      <Info className="w-24 h-24 text-blue-400" />
+                      <Scan className="w-24 h-24 text-blue-400" />
                     </div>
-                    <h3 className="text-lg font-bold text-blue-400 mb-2">AI Predictor</h3>
-                    <p className="text-sm text-gray-300 leading-relaxed relative z-10">
-                      Select a target disease to discover potential treatments using our graph neural network.
-                    </p>
+                    <div className="relative z-10">
+                      <h3 className="text-lg font-bold text-blue-400 mb-1">AI Model</h3>
+                      <p className="text-sm text-gray-300">Custom GNN model with AUC of 0.8959</p>
+                    </div>
                   </div>
 
                   <div className="bg-gray-900/60 p-6 rounded-3xl border border-white/10 backdrop-blur-xl shadow-xl">
@@ -458,96 +483,19 @@ function App() {
           </div>
         )}
 
-        {/* KNOWLEDGE GRAPH VIEW */}
+        {/* KNOWLEDGE GRAPH VIEW - Now an Interactive Explorer */}
         {currentView === ViewState.KNOWLEDGE_GRAPH && (
-          <div className="max-w-7xl mx-auto animate-fade-in space-y-6">
-            {/* Info Banner */}
-            <div className="bg-blue-900/20 border border-blue-500/20 rounded-xl p-4">
-              <div className="flex items-start gap-3">
-                <Lightbulb className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
-                <div>
-                  <h4 className="text-blue-400 font-medium text-sm mb-1">What is a Knowledge Graph?</h4>
-                  <p className="text-gray-400 text-sm">A knowledge graph is like a giant web of connected facts. Each "node" represents something (a drug, disease, gene), and the connections show how they relate to each other (e.g., "Drug X binds to Gene Y").</p>
-                </div>
-              </div>
-            </div>
+          <KnowledgeExplorer diseases={diseases} stats={stats} />
+        )}
 
-            <div className="bg-gray-900/50 p-8 rounded-3xl border border-white/10 backdrop-blur-xl">
-              <div className="flex items-center gap-3 mb-6">
-                <Network className="w-6 h-6 text-cyan-400" />
-                <h2 className="text-2xl font-bold text-white">Knowledge Graph Explorer</h2>
-              </div>
-
-              <p className="text-gray-400 max-w-2xl mb-8">
-                Our knowledge graph contains <span className="text-white font-semibold">{stats?.nodes?.total.toLocaleString()}</span> biomedical entities connected by <span className="text-white font-semibold">{stats?.relationships?.toLocaleString()}</span> relationships. This is the foundation of our AI's reasoning.
-              </p>
-
-              {/* Entity Types */}
-              <div className="mb-8">
-                <h4 className="text-sm font-medium text-white mb-4">Entity Types in the Graph</h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                  {[
-                    { label: 'Compound', color: 'cyan', desc: 'Drugs & chemicals', count: stats?.nodes?.compounds },
-                    { label: 'Disease', color: 'red', desc: 'Medical conditions', count: stats?.nodes?.diseases },
-                    { label: 'Gene', color: 'green', desc: 'Genetic elements', count: stats?.nodes?.genes },
-                    { label: 'Anatomy', color: 'blue', desc: 'Body parts', count: stats?.nodes?.anatomy },
-                    { label: 'Pathway', color: 'purple', desc: 'Biological processes', count: stats?.nodes?.pathways },
-                    { label: 'Pharm. Class', color: 'yellow', desc: 'Drug categories', count: '—' },
-                  ].map(item => (
-                    <div key={item.label} className={`p-4 rounded-xl bg-${item.color}-500/10 border border-${item.color}-500/20`}>
-                      <div className={`text-${item.color}-400 font-semibold text-sm`}>{item.label}</div>
-                      <div className="text-gray-500 text-xs mt-1">{item.desc}</div>
-                      {item.count && <div className="text-white text-lg font-bold mt-2">{typeof item.count === 'number' ? item.count.toLocaleString() : item.count}</div>}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Relationship Types */}
-              <div className="mb-8">
-                <h4 className="text-sm font-medium text-white mb-4">How Entities Connect</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {[
-                    { rel: 'TREATS', from: 'Drug', to: 'Disease', example: 'Aspirin treats Headache' },
-                    { rel: 'BINDS', from: 'Drug', to: 'Gene', example: 'Metformin binds AMPK gene' },
-                    { rel: 'ASSOCIATES', from: 'Gene', to: 'Disease', example: 'BRCA1 associates with Breast Cancer' },
-                    { rel: 'UPREGULATES', from: 'Drug', to: 'Gene', example: 'Drug increases gene activity' },
-                    { rel: 'DOWNREGULATES', from: 'Drug', to: 'Gene', example: 'Drug decreases gene activity' },
-                    { rel: 'RESEMBLES', from: 'Drug', to: 'Drug', example: 'Chemically similar compounds' },
-                  ].map(item => (
-                    <div key={item.rel} className="p-4 rounded-xl bg-white/5 border border-white/10">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-gray-500 text-xs">{item.from}</span>
-                        <ArrowRight className="w-3 h-3 text-purple-400" />
-                        <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded-full font-mono">{item.rel}</span>
-                        <ArrowRight className="w-3 h-3 text-purple-400" />
-                        <span className="text-gray-500 text-xs">{item.to}</span>
-                      </div>
-                      <p className="text-gray-500 text-xs italic">e.g., {item.example}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* How it helps */}
-              <div className="bg-green-900/20 border border-green-500/20 rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <CheckCircle2 className="w-5 h-5 text-green-400" />
-                  <h4 className="text-green-400 font-medium">Why This Matters</h4>
-                </div>
-                <p className="text-gray-400 text-sm">
-                  By analyzing these connections, our AI can find hidden patterns. For example: if Drug A treats Disease X, and Disease X shares genes with Disease Y, then Drug A might also help Disease Y. This is the power of <span className="text-white font-medium">neurosymbolic reasoning</span>—combining pattern recognition with logical rules.
-                </p>
-              </div>
-
-              <p className="mt-8 text-xs text-gray-600 italic text-center">Interactive graph visualization coming soon.</p>
-            </div>
-          </div>
+        {/* AMIE - Advanced Medical Imaging Environment */}
+        {currentView === ViewState.AMIE_IMAGING && (
+          <AMIEAnalysis />
         )}
       </div>
 
       {/* Footer */}
-      <Footer />
+      <Footer setCurrentView={setCurrentView} />
 
       {/* Scroll to Top Button */}
       <button
@@ -583,7 +531,7 @@ function ChevronDown({ className }: { className?: string }) {
 }
 
 const StatCard = ({ label, value, icon, tooltip }: any) => (
-  <div className="bg-gray-900/40 backdrop-blur border border-white/5 p-6 rounded-2xl group relative hover:border-white/10 transition-colors">
+  <div className="bg-gray-900/[0.45] hover:bg-gray-900/[0.65] backdrop-blur border border-white/5 p-6 rounded-2xl group relative hover:border-white/10 transition-all duration-300">
     <div className="flex justify-between items-start mb-4">
       <div className="flex items-center gap-2">
         <div className="text-gray-400 text-xs uppercase tracking-widest font-bold">{label}</div>
@@ -682,8 +630,8 @@ const DiseaseDetailView = ({ diseaseId }: { diseaseId: string }) => {
           <button
             onClick={() => setActiveTab('treatments')}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'treatments'
-                ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20'
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
+              ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20'
+              : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
           >
             <Zap className="w-4 h-4" />
@@ -692,8 +640,8 @@ const DiseaseDetailView = ({ diseaseId }: { diseaseId: string }) => {
           <button
             onClick={() => setActiveTab('network')}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'network'
-                ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20'
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
+              ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20'
+              : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
           >
             <Share2 className="w-4 h-4" />
@@ -702,8 +650,8 @@ const DiseaseDetailView = ({ diseaseId }: { diseaseId: string }) => {
           <button
             onClick={() => setActiveTab('related')}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'related'
-                ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20'
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
+              ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20'
+              : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
           >
             <GitBranch className="w-4 h-4" />
@@ -712,8 +660,8 @@ const DiseaseDetailView = ({ diseaseId }: { diseaseId: string }) => {
           <button
             onClick={() => setActiveTab('genes')}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'genes'
-                ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20'
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
+              ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20'
+              : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
           >
             <Database className="w-4 h-4" />

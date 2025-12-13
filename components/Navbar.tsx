@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Brain, LayoutDashboard, Zap, Activity, Network, Menu, X, Sparkles } from 'lucide-react';
+import { Brain, LayoutDashboard, Zap, Activity, Network, Menu, X, Sparkles, Scan } from 'lucide-react';
 
 // View states - must match App.tsx
 export enum ViewState {
   DASHBOARD,
   DRUG_ANALYSIS,
   DISEASE_ANALYSIS,
-  KNOWLEDGE_GRAPH
+  KNOWLEDGE_GRAPH,
+  AMIE_IMAGING
 }
 
 interface NavbarProps {
@@ -31,6 +32,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) => {
     { name: "Predictor", view: ViewState.DRUG_ANALYSIS, icon: <Zap className="w-4 h-4" /> },
     { name: "Diseases", view: ViewState.DISEASE_ANALYSIS, icon: <Activity className="w-4 h-4" /> },
     { name: "Graph", view: ViewState.KNOWLEDGE_GRAPH, icon: <Network className="w-4 h-4" /> },
+    { name: "AMIE", view: ViewState.AMIE_IMAGING, icon: <Scan className="w-4 h-4" /> },
   ];
 
   return (

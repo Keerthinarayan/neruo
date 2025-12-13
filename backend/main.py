@@ -1,8 +1,9 @@
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI, BackgroundTasks, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from backend.database import db
 from backend.services.neurosymbolic import service
 from backend.models.gnn import gnn_predictor
+from backend.services.amie import get_amie_service, get_disease_ids_for_pathology
 
 app = FastAPI(title="Neurosymbolic Drug Repurposing API")
 
@@ -54,6 +55,16 @@ def get_diseases():
         return {"status": "success", "data": results}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+@app.get("/drugs")
+def get_drugs(limit: int = 100):
+    try:
+        query = "MATCH (c:Compound) RETURN c.id as id, c.name as name ORDER BY c.name LIMIT $limit"
+        results = db.query(query, {"limit": limit})
+        return {"status": "success", "data": results}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 @app.get("/diseases/{disease_id}")
 def get_disease_details(disease_id: str):
     try:
@@ -540,22 +551,34 @@ def get_drug_disease_path(drug_id: str, disease_id: str):
     Shows the full mechanistic reasoning.
     """
     try:
+        # First, get drug and disease names
+        name_query = """
+        MATCH (c:Compound {id: $drug_id})
+        MATCH (d:Disease {id: $disease_id})
+        RETURN c.name as drug_name, d.name as disease_name
+        """
+        name_result = db.query(name_query, {"drug_id": drug_id, "disease_id": disease_id})
+        
+        if not name_result:
+            return {"status": "error", "message": "Drug or disease not found"}
+        
+        drug_name = name_result[0]['drug_name']
+        disease_name = name_result[0]['disease_name']
+        
         query = """
         // Direct treatment path
         OPTIONAL MATCH direct = (c:Compound {id: $drug_id})-[r:TREATS|PALLIATES]->(d:Disease {id: $disease_id})
         
         // Path through genes (Drug -> Gene -> Disease)
-        OPTIONAL MATCH gene_path = (c:Compound {id: $drug_id})-[r1:BINDS|UPREGULATES|DOWNREGULATES]->(g:Gene)-[r2:ASSOCIATES|UPREGULATES|DOWNREGULATES]->(d:Disease {id: $disease_id})
+        OPTIONAL MATCH gene_path = (c2:Compound {id: $drug_id})-[r1:BINDS|UPREGULATES|DOWNREGULATES]->(g:Gene)-[r2:ASSOCIATES|UPREGULATES|DOWNREGULATES]->(d2:Disease {id: $disease_id})
         
         // Path through similar drugs
-        OPTIONAL MATCH similar_drug_path = (c:Compound {id: $drug_id})-[:RESEMBLES]-(similar:Compound)-[:TREATS]->(d:Disease {id: $disease_id})
+        OPTIONAL MATCH similar_drug_path = (c3:Compound {id: $drug_id})-[:RESEMBLES]-(similar:Compound)-[:TREATS]->(d3:Disease {id: $disease_id})
         
         // Path through similar diseases  
-        OPTIONAL MATCH similar_disease_path = (c:Compound {id: $drug_id})-[:TREATS]->(similar_d:Disease)-[:RESEMBLES]-(d:Disease {id: $disease_id})
+        OPTIONAL MATCH similar_disease_path = (c4:Compound {id: $drug_id})-[:TREATS]->(similar_d:Disease)-[:RESEMBLES]-(d4:Disease {id: $disease_id})
         
         RETURN 
-            c.name as drug_name,
-            d.name as disease_name,
             collect(DISTINCT {
                 type: 'direct',
                 relationship: type(r)
@@ -585,8 +608,8 @@ def get_drug_disease_path(drug_id: str, disease_id: str):
         
         # Build visualization nodes and edges
         nodes = [
-            {'id': drug_id, 'name': row['drug_name'], 'type': 'Compound', 'isCenter': True},
-            {'id': disease_id, 'name': row['disease_name'], 'type': 'Disease', 'isCenter': True}
+            {'id': drug_id, 'name': drug_name, 'type': 'Compound', 'isCenter': True},
+            {'id': disease_id, 'name': disease_name, 'type': 'Disease', 'isCenter': True}
         ]
         edges = []
         seen = {drug_id, disease_id}
@@ -643,8 +666,8 @@ def get_drug_disease_path(drug_id: str, disease_id: str):
         return {
             "status": "success",
             "data": {
-                "drug": {'id': drug_id, 'name': row['drug_name']},
-                "disease": {'id': disease_id, 'name': row['disease_name']},
+                "drug": {'id': drug_id, 'name': drug_name},
+                "disease": {'id': disease_id, 'name': disease_name},
                 "nodes": nodes,
                 "edges": edges,
                 "paths": {
@@ -859,3 +882,108 @@ def reload_model():
         }
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+
+# ============================================
+# AMIE - Advanced Medical Imaging Environment
+# ============================================
+
+@app.post("/amie/analyze")
+async def analyze_xray(file: UploadFile = File(...)):
+    """
+    Analyze a chest X-ray image using TorchXRayVision.
+    Returns detected pathologies and relevant drug recommendations from Hetionet.
+    """
+    try:
+        # Read file
+        contents = await file.read()
+        
+        # Get AMIE service and analyze
+        amie = get_amie_service()
+        result = amie.analyze(contents)
+        
+        if result['status'] != 'success':
+            return result
+        
+        # Get relevant drugs from Hetionet for detected conditions
+        drug_recommendations = []
+        
+        for finding in result.get('significant_findings', [])[:3]:  # Top 3 findings
+            pathology = finding['pathology']
+            disease_ids = get_disease_ids_for_pathology(pathology)
+            
+            for disease_id in disease_ids:
+                # Query drugs that treat this disease
+                query = """
+                MATCH (c:Compound)-[r:TREATS|PALLIATES]->(d:Disease {id: $disease_id})
+                RETURN c.id as drug_id, c.name as drug_name, type(r) as relationship, d.name as disease_name
+                LIMIT 5
+                """
+                drugs = db.query(query, {"disease_id": disease_id})
+                
+                for drug in drugs:
+                    drug_recommendations.append({
+                        'drug_id': drug['drug_id'],
+                        'drug_name': drug['drug_name'],
+                        'for_condition': pathology,
+                        'disease_name': drug['disease_name'],
+                        'relationship': drug['relationship']
+                    })
+        
+        # Remove duplicates
+        seen = set()
+        unique_recommendations = []
+        for rec in drug_recommendations:
+            key = rec['drug_id']
+            if key not in seen:
+                seen.add(key)
+                unique_recommendations.append(rec)
+        
+        return {
+            "status": "success",
+            "data": {
+                "primary_condition": result['primary_condition'],
+                "confidence": result['confidence'],
+                "findings": [
+                    {
+                        'pathology': f['pathology'],
+                        'probability': round(f['probability'], 3),
+                        'severity': 'High' if f['probability'] > 0.7 else 'Moderate' if f['probability'] > 0.5 else 'Low'
+                    }
+                    for f in result.get('significant_findings', [])
+                ],
+                "all_predictions": [
+                    {'pathology': p['pathology'], 'probability': round(p['probability'], 3)}
+                    for p in result['all_predictions'][:10]  # Top 10
+                ],
+                "drug_recommendations": unique_recommendations[:10],
+                "model_info": result['model_info']
+            }
+        }
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"status": "error", "message": str(e)}
+
+
+@app.get("/amie/status")
+def amie_status():
+    """Check if AMIE service is available"""
+    try:
+        amie = get_amie_service()
+        return {
+            "status": "success",
+            "data": {
+                "available": True,
+                "model": "DenseNet121",
+                "pathologies": list(amie.pathology_labels) if amie.pathology_labels else []
+            }
+        }
+    except Exception as e:
+        return {
+            "status": "error", 
+            "message": str(e),
+            "data": {"available": False}
+        }
+
