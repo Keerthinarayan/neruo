@@ -571,6 +571,5 @@ MIT License - feel free to use for research and education.
 
 <sub>Built with ❤️ for drug discovery research</sub>
 
-<img src="public/comparison_chart.png" alt="Comparison" width="600"/>
 
 </div>
