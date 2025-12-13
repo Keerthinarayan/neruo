@@ -89,17 +89,17 @@
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        FRONTEND (React + TypeScript)            │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐   │
-│  │Dashboard │ │Predictor │ │Knowledge │ │Drug Comparison   │   │
-│  │          │ │Analysis  │ │Explorer  │ │View              │   │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────────────┘   │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐    │
+│  │Dashboard │ │Predictor │ │Knowledge │ │Drug Comparison   │    │
+│  │          │ │Analysis  │ │Explorer  │ │View              │    │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────────────┘    │
 └─────────────────────────────────────────────────────────────────┘
                               │ REST API
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                      BACKEND (FastAPI + Python)                  │
+│                      BACKEND (FastAPI + Python)                 │
 │  ┌────────────────────────────────────────────────────────┐     │
-│  │              NeuroSymbolic Service                      │     │
+│  │              NeuroSymbolic Service                     │     │
 │  │  ┌─────────────────────┐  ┌─────────────────────────┐  │     │
 │  │  │   GNN Predictor     │  │  Symbolic Reasoner      │  │     │
 │  │  │   (PyTorch Model)   │  │  (Rule-based Logic)     │  │     │
@@ -109,8 +109,8 @@
                               │ Cypher Queries
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    NEO4J GRAPH DATABASE                          │
-│              (Hetionet Knowledge Graph)                          │
+│                    NEO4J GRAPH DATABASE                         │
+│              (Hetionet Knowledge Graph)                         │
 │   47K+ Nodes | 2.2M+ Relationships | 11 Node Types | 24 Edges   │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -214,22 +214,20 @@ We use **Hetionet**, a comprehensive biomedical knowledge graph that integrates 
 | **Cellular Component** | 1,391 | GO cellular components |
 | **Molecular Function** | 2,884 | GO molecular functions |
 
-### Relationship Types (24 edge types)
+### Relationship Types (10 core edge types used in model)
 
-```
-TREATS          - Drug treats Disease
-PALLIATES       - Drug palliates Disease  
-BINDS           - Compound binds Gene
-TARGETS         - Drug targets Gene
-UPREGULATES     - Compound upregulates Gene
-DOWNREGULATES   - Compound downregulates Gene
-ASSOCIATES      - Disease associates with Gene
-RESEMBLES       - Drug/Disease resembles Drug/Disease
-INTERACTS       - Gene interacts with Gene
-LOCALIZES       - Disease localizes to Anatomy
-INCLUDES        - PharmacologicClass includes Compound
-... and more
-```
+| Relationship | Source | Target | Description | Example |
+|-------------|--------|--------|-------------|---------|
+| **TREATS** | Drug | Disease | Drug treats disease | Aspirin treats Headache |
+| **PALLIATES** | Drug | Disease | Drug alleviates symptoms | Morphine palliates pain |
+| **BINDS** | Drug | Gene | Drug binds to protein/gene | Metformin binds AMPK |
+| **TARGETS** | Drug | Gene | Drug targets gene product | Imatinib targets BCR-ABL |
+| **UPREGULATES** | Drug | Gene | Drug increases expression | Activator increases mRNA |
+| **DOWNREGULATES** | Drug | Gene | Drug decreases expression | Inhibitor reduces protein |
+| **ASSOCIATES** | Gene | Disease | Gene associated with disease | BRCA1 → Breast Cancer |
+| **INTERACTS** | Gene | Gene | Protein-protein interaction | p53 interacts MDM2 |
+| **RESEMBLES** | Drug/Disease | Drug/Disease | Structural/phenotypic similarity | Similar compounds |
+| **LOCALIZES** | Disease | Anatomy | Disease affects body part | Diabetes → Pancreas |
 
 ### Sample Cypher Queries
 

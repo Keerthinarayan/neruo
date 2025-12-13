@@ -4,6 +4,8 @@ import { GraphView } from './components/GraphView';
 import { FullNetworkGraph } from './components/FullNetworkGraph';
 import Navbar, { ViewState } from './components/Navbar';
 import Footer from './components/Footer';
+import KnowledgeExplorer from './components/KnowledgeExplorer';
+import AMIEAnalysis from './components/AMIEAnalysis';
 import { Network, Brain, Search, Activity, Database, GitBranch, Zap, ArrowRight, Lightbulb, Clock, Target, CheckCircle2, Beaker, Info, BookOpen, AlertTriangle, Check, X, ArrowUp, Share2, HelpCircle } from 'lucide-react';
 
 function App() {
@@ -458,91 +460,14 @@ function App() {
           </div>
         )}
 
-        {/* KNOWLEDGE GRAPH VIEW */}
+        {/* KNOWLEDGE GRAPH VIEW - Now an Interactive Explorer */}
         {currentView === ViewState.KNOWLEDGE_GRAPH && (
-          <div className="max-w-7xl mx-auto animate-fade-in space-y-6">
-            {/* Info Banner */}
-            <div className="bg-blue-900/20 border border-blue-500/20 rounded-xl p-4">
-              <div className="flex items-start gap-3">
-                <Lightbulb className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
-                <div>
-                  <h4 className="text-blue-400 font-medium text-sm mb-1">What is a Knowledge Graph?</h4>
-                  <p className="text-gray-400 text-sm">A knowledge graph is like a giant web of connected facts. Each "node" represents something (a drug, disease, gene), and the connections show how they relate to each other (e.g., "Drug X binds to Gene Y").</p>
-                </div>
-              </div>
-            </div>
+          <KnowledgeExplorer diseases={diseases} stats={stats} />
+        )}
 
-            <div className="bg-gray-900/50 p-8 rounded-3xl border border-white/10 backdrop-blur-xl">
-              <div className="flex items-center gap-3 mb-6">
-                <Network className="w-6 h-6 text-cyan-400" />
-                <h2 className="text-2xl font-bold text-white">Knowledge Graph Explorer</h2>
-              </div>
-
-              <p className="text-gray-400 max-w-2xl mb-8">
-                Our knowledge graph contains <span className="text-white font-semibold">{stats?.nodes?.total.toLocaleString()}</span> biomedical entities connected by <span className="text-white font-semibold">{stats?.relationships?.toLocaleString()}</span> relationships. This is the foundation of our AI's reasoning.
-              </p>
-
-              {/* Entity Types */}
-              <div className="mb-8">
-                <h4 className="text-sm font-medium text-white mb-4">Entity Types in the Graph</h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                  {[
-                    { label: 'Compound', color: 'cyan', desc: 'Drugs & chemicals', count: stats?.nodes?.compounds },
-                    { label: 'Disease', color: 'red', desc: 'Medical conditions', count: stats?.nodes?.diseases },
-                    { label: 'Gene', color: 'green', desc: 'Genetic elements', count: stats?.nodes?.genes },
-                    { label: 'Anatomy', color: 'blue', desc: 'Body parts', count: stats?.nodes?.anatomy },
-                    { label: 'Pathway', color: 'purple', desc: 'Biological processes', count: stats?.nodes?.pathways },
-                    { label: 'Pharm. Class', color: 'yellow', desc: 'Drug categories', count: '—' },
-                  ].map(item => (
-                    <div key={item.label} className={`p-4 rounded-xl bg-${item.color}-500/10 border border-${item.color}-500/20`}>
-                      <div className={`text-${item.color}-400 font-semibold text-sm`}>{item.label}</div>
-                      <div className="text-gray-500 text-xs mt-1">{item.desc}</div>
-                      {item.count && <div className="text-white text-lg font-bold mt-2">{typeof item.count === 'number' ? item.count.toLocaleString() : item.count}</div>}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Relationship Types */}
-              <div className="mb-8">
-                <h4 className="text-sm font-medium text-white mb-4">How Entities Connect</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {[
-                    { rel: 'TREATS', from: 'Drug', to: 'Disease', example: 'Aspirin treats Headache' },
-                    { rel: 'BINDS', from: 'Drug', to: 'Gene', example: 'Metformin binds AMPK gene' },
-                    { rel: 'ASSOCIATES', from: 'Gene', to: 'Disease', example: 'BRCA1 associates with Breast Cancer' },
-                    { rel: 'UPREGULATES', from: 'Drug', to: 'Gene', example: 'Drug increases gene activity' },
-                    { rel: 'DOWNREGULATES', from: 'Drug', to: 'Gene', example: 'Drug decreases gene activity' },
-                    { rel: 'RESEMBLES', from: 'Drug', to: 'Drug', example: 'Chemically similar compounds' },
-                  ].map(item => (
-                    <div key={item.rel} className="p-4 rounded-xl bg-white/5 border border-white/10">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-gray-500 text-xs">{item.from}</span>
-                        <ArrowRight className="w-3 h-3 text-purple-400" />
-                        <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded-full font-mono">{item.rel}</span>
-                        <ArrowRight className="w-3 h-3 text-purple-400" />
-                        <span className="text-gray-500 text-xs">{item.to}</span>
-                      </div>
-                      <p className="text-gray-500 text-xs italic">e.g., {item.example}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* How it helps */}
-              <div className="bg-green-900/20 border border-green-500/20 rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <CheckCircle2 className="w-5 h-5 text-green-400" />
-                  <h4 className="text-green-400 font-medium">Why This Matters</h4>
-                </div>
-                <p className="text-gray-400 text-sm">
-                  By analyzing these connections, our AI can find hidden patterns. For example: if Drug A treats Disease X, and Disease X shares genes with Disease Y, then Drug A might also help Disease Y. This is the power of <span className="text-white font-medium">neurosymbolic reasoning</span>—combining pattern recognition with logical rules.
-                </p>
-              </div>
-
-              <p className="mt-8 text-xs text-gray-600 italic text-center">Interactive graph visualization coming soon.</p>
-            </div>
-          </div>
+        {/* AMIE - Advanced Medical Imaging Environment */}
+        {currentView === ViewState.AMIE_IMAGING && (
+          <AMIEAnalysis />
         )}
       </div>
 
