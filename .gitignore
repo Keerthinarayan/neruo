@@ -35,7 +35,11 @@ __pycache__/
 *.pyc
 
 # Model checkpoints (too large for GitHub)
-backend/checkpoints/*.pt
+# Model checkpoints (too large for GitHub)
+*.pt
+*.pth
+*.ckpt
+backend/checkpoints/
 
 # Virtual environment
 .venv/
